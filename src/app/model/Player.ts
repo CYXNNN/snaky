@@ -3,13 +3,16 @@ import {DirectionKey} from './Types';
 
 export class Player {
 
+  SIZE: number;
+
   snake: Field[];
   head: Field;
 
   direction: DirectionKey = DirectionKey.RIGHT; // lets start to the right
 
 
-  constructor() {
+  constructor(size: number = 20) {
+    this.SIZE = size;
     // spawn at 5x5
     // TODO randomize
     const start = new Field(5,5)
@@ -39,15 +42,15 @@ export class Player {
     }
 
     if(field.x < 0) {
-      field.x = 40;
+      field.x = this.SIZE;
     }
-    if(field.x > 40) {
+    if(field.x > this.SIZE) {
       field.x = 0;
     }
     if(field.y < 0) {
-      field.y = 40;
+      field.y = this.SIZE;
     }
-    if(field.y > 40) {
+    if(field.y > this.SIZE) {
       field.y = 0;
     }
 

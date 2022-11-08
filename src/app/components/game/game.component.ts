@@ -11,7 +11,7 @@ import {DirectionKey} from '../../model/Types';
 })
 export class GameComponent implements OnInit {
 
-  SIZE = 40;
+  SIZE = 20;
   // the id of the game
   gameId: string = '';
 
@@ -59,13 +59,13 @@ export class GameComponent implements OnInit {
       this.drawSnake(this.player.snake) //repeat this for the other players in this.players
 
       if (this.consumables.length < 1) {
-        this.consumables.push(new Consumable(new Field(6,10)));
+        this.consumables.push(new Consumable(new Field(Math.floor(Math.random() * this.SIZE),Math.floor(Math.random() * this.SIZE))));
       }
       this.consumables = this.consumables.filter(c => !c.consumed);
       this.consumables.forEach(c => this.drawConsumable(this, c.location));
 
 
-    }, 500) // every second
+    }, 100) // every second
 
 
 
