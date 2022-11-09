@@ -15,6 +15,9 @@ export class GameComponent implements OnInit {
   // the id of the game
   gameId: string = '';
 
+  allFields: Field[] = [];
+  emptyFields: Field[] = [];
+
   //urself
   player: Player;
 
@@ -31,11 +34,12 @@ export class GameComponent implements OnInit {
 
     // call backend to check, if there is a saved game state and the game should be resumed:
     if (true) {
-      this.player = new Player();
+      this.player = new Player(this.SIZE);
 
     } else {
       // resume saved state from backend
     }
+
 
     this.consumables = [];
 
@@ -46,6 +50,12 @@ export class GameComponent implements OnInit {
     this.board =  document.getElementById("board");
     this.board_ctx = this.board.getContext("2d");
 
+    for (let i = 0; i <= this.SIZE; i++) {
+      for (let j = 0; j <= this.SIZE; j++) {
+        this.allFields.push(new Field(i, j))
+      }
+    }
+
     this.game();
 
   }
@@ -55,20 +65,45 @@ export class GameComponent implements OnInit {
 
       this.init();
       const grow = this.checkCollision();
-      this.player.move(grow);
+      if(this.player.move(grow)) {
+        alert('Game over');
+      }
       this.drawSnake(this.player.snake) //repeat this for the other players in this.players
 
+
       if (this.consumables.length < 1) {
-        this.consumables.push(new Consumable(new Field(Math.floor(Math.random() * this.SIZE),Math.floor(Math.random() * this.SIZE))));
+        this.consumables.push(new Consumable(this.getRandomEmptyField()));
       }
       this.consumables = this.consumables.filter(c => !c.consumed);
       this.consumables.forEach(c => this.drawConsumable(this, c.location));
 
 
-    }, 100) // every second
+    }, 300) // every second
 
 
 
+  }
+
+  getRandomEmptyField(): Field {
+    this.emptyFields = [];
+
+    this.allFields.forEach(field => {
+      let free = true;
+      this.player.snake.forEach(snakeField => {
+        if (field.x === snakeField.x && field.y === snakeField.y) {
+          free = false;
+        }
+      })
+      if (free) {
+        this.emptyFields.push(field);
+      }
+    })
+
+    if (this.emptyFields.length == 0) {
+      alert('you won');
+    }
+debugger;
+    return this.emptyFields[Math.floor(Math.random() * this.emptyFields.length)];
   }
 
   checkCollision(): boolean {
@@ -76,7 +111,6 @@ export class GameComponent implements OnInit {
     this.consumables.forEach(c => {
       if(c.location.x === this.player.head.x && c.location.y === this.player.head.y) {
         c.consumed = true;
-        debugger;
         res = true;
       }
     })

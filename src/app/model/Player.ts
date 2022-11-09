@@ -11,27 +11,21 @@ export class Player {
   direction: DirectionKey = DirectionKey.RIGHT; // lets start to the right
 
 
-  constructor(size: number = 20) {
+  constructor(size: number = 10) {
     this.SIZE = size;
     // spawn at 5x5
     // TODO randomize
     const start = new Field(5,5)
     this.snake = [start];
-    this.head = start;
+    this.head = new Field(start.x, start.y);
 
   }
 
-  grow(): void {
-    debugger;
-    const tail = this.snake[this.snake.length -1];
-    this.snake.push(new Field(tail.x, tail.y));
+  hasCollidedWithOwnSake(): boolean {
+    return this.snake.filter(field => field.x === this.head.x && field.y === this.head.y).length > 1;
   }
 
-  shrink(): void {
-    this.snake.pop();
-  }
-
-  move(grow: boolean): void {
+  move(grow: boolean): boolean {
     let field;
 
     switch (this.direction) {
@@ -54,16 +48,15 @@ export class Player {
       field.y = 0;
     }
 
-    this.head = field;
+    this.head = new Field(field.x, field.y);
     this.snake.unshift(field);
 
     if (!grow) {
-      debugger;
      // remove tail
       this.snake.pop();
     }
 
-    console.log(this.snake);
+    return this.hasCollidedWithOwnSake();
   }
 
 
